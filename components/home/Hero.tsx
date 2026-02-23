@@ -1,6 +1,5 @@
 "use client";
 
-import { Button, Card, CardBody } from "@heroui/react";
 import { store } from "@/config.store";
 
 export const Hero = () => {

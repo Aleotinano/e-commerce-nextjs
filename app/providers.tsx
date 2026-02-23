@@ -3,6 +3,7 @@
 import { HeroUIProvider } from "@heroui/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { AuthProvider } from "@/context/Auth";
+import { ProductProvider } from "@/context/Product";
 
 type ProvidersProps = {
   children: React.ReactNode;
@@ -19,7 +20,9 @@ export function Providers({ children }: ProvidersProps) {
       disableTransitionOnChange
     >
       <AuthProvider>
-        <HeroUIProvider>{children}</HeroUIProvider>
+        <ProductProvider>
+          <HeroUIProvider>{children}</HeroUIProvider>
+        </ProductProvider>
       </AuthProvider>
     </NextThemesProvider>
   );

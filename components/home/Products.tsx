@@ -1,24 +1,21 @@
-import { fetcher } from "@/lib/api";
-import { Product } from "@/types/products";
+"use client";
 
-export default async function Products() {
-  try {
-    const products = await fetcher<Product[]>("/products");
+import { useProducts } from "@/context/useProducts";
 
-    console.log(products);
-    return (
-      <ul>
-        {products.map((product) => (
-          <li key={product.name}>
-            {product.name} - ${product.price}
-          </li>
-        ))}
-      </ul>
-    );
-  } catch (error) {
-    console.log(error);
-    if (error instanceof Error) {
-      return <p>{error.message}</p>;
-    }
-  }
-}
+export const Products = () => {
+  const { products, isLoadingProducts, productError } = useProducts();
+
+  if (isLoadingProducts) return <p>Cargando productos...</p>;
+  if (productError) return <p>{productError}</p>;
+  if (!products.length) return <p>No hay productos disponibles.</p>;
+
+  return (
+    <ul>
+      {products.map((product, index) => (
+        <li key={`${product.name}-${index}`}>
+          {product.name} - ${product.price}
+        </li>
+      ))}
+    </ul>
+  );
+};
