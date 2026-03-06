@@ -1,18 +1,22 @@
 import { fetcher } from "../lib/api";
-import { Category } from "../types/category";
+import {
+  Category,
+  CategoryCreateInput,
+  CategoryUpdateInput,
+} from "../types/category";
 
 export const categoryService = {
   getAll: () => fetcher<Category[]>("/categories"),
 
   getById: (id: number) => fetcher<Category>(`/categories/${id}`),
 
-  create: (data: Category) =>
+  create: (data: CategoryCreateInput) =>
     fetcher<Category>("/categories", {
       method: "POST",
       body: JSON.stringify(data),
     }),
 
-  update: (id: number, data: Category) =>
+  update: (id: number, data: CategoryUpdateInput) =>
     fetcher<Category>(`/categories/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),

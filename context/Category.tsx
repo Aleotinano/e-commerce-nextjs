@@ -1,101 +1,109 @@
-// "use client";
+"use client";
 
-// import { createContext, useCallback, useEffect, useMemo, useState } from "react";
-// import { categoryService } from "@/services/category.service";
-// import { ProductContextType } from "@/types/context";
-// import { Product } from "@/types/products";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { categoryService } from "@/services/category.service";
+import { CategoryContextType } from "@/types/context";
+import { CategoryCreateInput, CategoryUpdateInput, Category } from "@/types/category";
 
-// export const ProductContext = createContext<ProductContextType | null>(null);
+export const CategoryContext = createContext<CategoryContextType | null>(null);
 
-// type ProductProviderProps = {
-//   children: React.ReactNode;
-// };
+type CategoryProviderProps = {
+  children: React.ReactNode;
+};
 
-// function getErrorMessage(error: unknown) {
-//   if (error instanceof Error) return error.message;
-//   return "Error desconocido";
-// }
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) return error.message;
+  return "Error desconocido";
+}
 
-// export function ProductProvider({ children }: ProductProviderProps) {
-//   const [products, setProducts] = useState<Product[]>([]);
-//   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
-//   const [productError, setProductError] = useState<string | null>(null);
+export function CategoryProvider({ children }: CategoryProviderProps) {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
+  const [categoryError, setCategoryError] = useState<string | null>(null);
 
-//   const getProducts = useCallback(async () => {
-//     setIsLoadingProducts(true);
-//     setProductError(null);
+  const getCategories = useCallback(async () => {
+    setIsLoadingCategories(true);
+    setCategoryError(null);
 
-//     try {
-//       const data = await categoryService.getAll();
-//       setProducts(data);
-//     } catch (error) {
-//       setProductError(getErrorMessage(error));
-//     } finally {
-//       setIsLoadingProducts(false);
-//     }
-//   }, []);
+    try {
+      const data = await categoryService.getAll();
+      setCategories(data);
+    } catch (error) {
+      setCategoryError(getErrorMessage(error));
+    } finally {
+      setIsLoadingCategories(false);
+    }
+  }, []);
 
-//   useEffect(() => {
-//     void getProducts();
-//   }, [getProducts]);
+  useEffect(() => {
+    void getCategories();
+  }, [getCategories]);
 
-//   const getProductById = useCallback(async (id: number) => {
-//     return productService.getById(id);
-//   }, []);
+  const getCategoryById = useCallback(async (id: number) => {
+    return categoryService.getById(id);
+  }, []);
 
-//   const createProduct = useCallback(
-//     async (data: Product) => {
-//       setProductError(null);
-//       const created = await productService.create(data);
-//       await getProducts();
-//       return created;
-//     },
-//     [getProducts]
-//   );
+  const createCategory = useCallback(
+    async (data: CategoryCreateInput) => {
+      setCategoryError(null);
+      const created = await categoryService.create(data);
+      await getCategories();
+      return created;
+    },
+    [getCategories]
+  );
 
-//   const updateProduct = useCallback(
-//     async (id: number, data: Product) => {
-//       setProductError(null);
-//       const updated = await productService.update(id, data);
-//       await getProducts();
-//       return updated;
-//     },
-//     [getProducts]
-//   );
+  const updateCategory = useCallback(
+    async (id: number, data: CategoryUpdateInput) => {
+      setCategoryError(null);
+      const updated = await categoryService.update(id, data);
+      await getCategories();
+      return updated;
+    },
+    [getCategories]
+  );
 
-//   const removeProduct = useCallback(
-//     async (id: number) => {
-//       setProductError(null);
-//       await productService.remove(id);
-//       await getProducts();
-//     },
-//     [getProducts]
-//   );
+  const removeCategory = useCallback(
+    async (id: number) => {
+      setCategoryError(null);
+      await categoryService.remove(id);
+      await getCategories();
+    },
+    [getCategories]
+  );
 
-//   const value = useMemo(
-//     () => ({
-//       products,
-//       isLoadingProducts,
-//       productError,
-//       getProducts,
-//       getProductById,
-//       createProduct,
-//       updateProduct,
-//       removeProduct,
-//     }),
-//     [
-//       products,
-//       isLoadingProducts,
-//       productError,
-//       getProducts,
-//       getProductById,
-//       createProduct,
-//       updateProduct,
-//       removeProduct,
-//     ]
-//   );
+  const value = useMemo(
+    () => ({
+      categories,
+      isLoadingCategories,
+      categoryError,
+      getCategories,
+      getCategoryById,
+      createCategory,
+      updateCategory,
+      removeCategory,
+    }),
+    [
+      categories,
+      isLoadingCategories,
+      categoryError,
+      getCategories,
+      getCategoryById,
+      createCategory,
+      updateCategory,
+      removeCategory,
+    ]
+  );
 
-//   return (
-//     <ProductContext.Provider value={value}>{children}</ProductContext.Provider>
-//   );
-// }
+  return (
+    <CategoryContext.Provider value={value}>
+      {children}
+    </CategoryContext.Provider>
+  );
+}

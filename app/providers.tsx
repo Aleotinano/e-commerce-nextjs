@@ -3,6 +3,8 @@
 import { HeroUIProvider } from "@heroui/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { AuthProvider } from "@/context/Auth";
+import { CartProvider } from "@/context/Cart";
+import { CategoryProvider } from "@/context/Category";
 import { ProductProvider } from "@/context/Product";
 
 type ProvidersProps = {
@@ -20,9 +22,13 @@ export function Providers({ children }: ProvidersProps) {
       disableTransitionOnChange
     >
       <AuthProvider>
-        <ProductProvider>
-          <HeroUIProvider>{children}</HeroUIProvider>
-        </ProductProvider>
+        <CartProvider>
+          <CategoryProvider>
+            <ProductProvider>
+              <HeroUIProvider>{children}</HeroUIProvider>
+            </ProductProvider>
+          </CategoryProvider>
+        </CartProvider>
       </AuthProvider>
     </NextThemesProvider>
   );

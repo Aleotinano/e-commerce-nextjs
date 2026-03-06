@@ -1,6 +1,5 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 import { Button, ButtonGroup } from "@heroui/react";
 
@@ -12,13 +11,7 @@ const themeOptions = [
 
 export const ThemeSwitcher = () => {
   const { theme, setTheme } = useTheme();
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  );
-
-  const activeTheme = mounted ? theme : "light";
+  const activeTheme = theme ?? "light";
 
   return (
     <ButtonGroup aria-label="Theme options" size="sm" variant="flat">
