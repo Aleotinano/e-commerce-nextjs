@@ -58,8 +58,8 @@ export interface CartContextType {
   isCreatingOrder: boolean;
   isCartOpen: boolean;
   getCart: () => Promise<void>;
-  addToCart: (productId: number) => Promise<void>;
-  removeFromCart: (productId: number) => Promise<void>;
+  addToCart: (variantId: number) => Promise<void>;
+  removeFromCart: (variantId: number) => Promise<void>;
   clearCart: () => Promise<void>;
   createOrder: () => Promise<string | null>;
   openCart: () => void;

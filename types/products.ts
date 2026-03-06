@@ -47,56 +47,10 @@ export interface ProductQueryParams {
   offset?: number;
 }
 
-export interface ProductListResult {
-  products: Product[];
-  total: number | null;
-  limit: number | null;
-  offset: number | null;
-}
-
 export interface ProductFiltersState {
   name: string;
   price: string;
   categoryId: number | null;
-}
-
-export interface ProductApi {
-  id: number;
-  img?: string | null;
-  name: string;
-  description?: string | null;
-  categoryId?: number | null;
-  isActive: boolean;
-  variants?: ProductVariant[];
-}
-
-export interface PaginationMeta {
-  total?: number;
-  count?: number;
-  limit?: number;
-  offset?: number;
-}
-
-export interface ProductListApiResponse {
-  products?: ProductApi[];
-  data?: ProductApi[];
-  items?: ProductApi[];
-  total?: number;
-  count?: number;
-  limit?: number;
-  offset?: number;
-  pagination?: PaginationMeta;
-  meta?: PaginationMeta;
-}
-
-export interface ProductCreateApiResponse {
-  message: string;
-  producto: ProductApi;
-}
-
-export interface ProductUpdateApiResponse {
-  message: string;
-  product: ProductApi;
 }
 
 export interface ProductCreateInput {

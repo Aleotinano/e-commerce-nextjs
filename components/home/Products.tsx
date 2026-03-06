@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMemo, useState } from "react";
 import { useCart } from "@/context/useCart";
@@ -29,27 +29,35 @@ export const Products = () => {
 
   const quantityByProductId = useMemo(() => {
     const map = new Map<number, number>();
-    items.forEach((item) => map.set(item.product.id, item.quantity));
+    items.forEach((item) => {
+      const productId = item.variant.productId;
+      map.set(productId, (map.get(productId) ?? 0) + item.quantity);
+    });
     return map;
   }, [items]);
 
-  const handleAddToCart = async (productId: number) => {
+  const displayProducts = useMemo(() => {
+    return (products ?? []).map((product) => ({
+      ...product,
+      variants: product.variants ?? [],
+    }));
+  }, [products]);
+
+  const handleAddVariantToCart = async (variantId: number) => {
     setLocalError(null);
 
     try {
-      await addToCart(productId);
+      await addToCart(variantId);
     } catch (error) {
       setLocalError(getErrorMessage(error));
     }
   };
 
-  const handleRemoveFromCart = async (productId: number) => {
-    if ((quantityByProductId.get(productId) ?? 0) <= 0) return;
-
+  const handleRemoveVariantFromCart = async (variantId: number) => {
     setLocalError(null);
 
     try {
-      await removeFromCart(productId);
+      await removeFromCart(variantId);
     } catch (error) {
       setLocalError(getErrorMessage(error));
     }
@@ -88,18 +96,16 @@ export const Products = () => {
     productsContent = <p>Cargando productos...</p>;
   } else if (productError) {
     productsContent = <p>{productError}</p>;
-  } else if (!products.length) {
+  } else if (!displayProducts.length) {
     productsContent = <p>No hay productos disponibles.</p>;
   } else {
     productsContent = (
-      <ul className="flex flex-wrap gap-2">
-        {products.map((product) => (
+      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {displayProducts.map((product) => (
           <ProductCard
             key={product.id}
             product={product}
-            quantityInCart={quantityByProductId.get(product.id) ?? 0}
-            onAddToCart={handleAddToCart}
-            onRemoveFromCart={handleRemoveFromCart}
+            onAddToCart={handleAddVariantToCart}
           />
         ))}
       </ul>
@@ -120,8 +126,8 @@ export const Products = () => {
         isClearing={isClearing}
         isCreatingOrder={isCreatingOrder}
         errorMessage={visibleError}
-        onAddItem={handleAddToCart}
-        onRemoveItem={handleRemoveFromCart}
+        onAddItem={handleAddVariantToCart}
+        onRemoveItem={handleRemoveVariantFromCart}
         onClearCart={handleClearCart}
         onCreateOrder={handleCreateOrder}
         onClose={closeCart}

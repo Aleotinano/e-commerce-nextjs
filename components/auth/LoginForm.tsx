@@ -4,26 +4,29 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { authService } from "@/services/auth.service";
 import { LoginInput } from "@/types/auth";
+import { useAuth } from "@/context/useAuth";
 
 export const LoginForm = () => {
   const router = useRouter();
+  const { setUser } = useAuth();
+
+  const onSubmit = async (data: LoginInput) => {
+    try {
+      const res = await authService.login(data);
+      if (!res?.usuario) return;
+
+      setUser(res.usuario);
+      router.replace("/");
+    } catch (error) {
+      if (error instanceof Error) console.error(error.message);
+    }
+  };
+
   const {
     register,
     handleSubmit,
     formState: { isSubmitting },
   } = useForm<LoginInput>();
-
-  const onSubmit = async (data: LoginInput) => {
-    try {
-      const res = await authService.login(data);
-      console.log(res.message);
-      if (!res?.usuario) return;
-      router.replace("/");
-      router.refresh();
-    } catch (error) {
-      if (error instanceof Error) console.error(error.message);
-    }
-  };
 
   return (
     <form

@@ -4,7 +4,6 @@ import { createContext, useCallback, useEffect, useMemo, useState } from "react"
 import { cartService } from "@/services/cart.service";
 import { mercadoPagoService } from "@/services/mercadopago.service";
 import { orderService } from "@/services/orders.service";
-import { productService } from "@/services/products.services";
 import { CartContextType } from "@/types/context";
 import { CartInfo, CartItem } from "@/types/cart";
 import { useAuth } from "./useAuth";
@@ -18,20 +17,6 @@ type CartProviderProps = {
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
   return "Error desconocido";
-}
-
-function pickVariantIdFromProduct(product: Awaited<ReturnType<typeof productService.getById>>) {
-  const activeWithStock = product.variants.find(
-    (variant) => variant.isActive && variant.stock > 0,
-  );
-
-  if (activeWithStock) return activeWithStock.id;
-
-  if (typeof product.selectedVariantId === "number") {
-    return product.selectedVariantId;
-  }
-
-  return product.variants[0]?.id;
 }
 
 export function CartProvider({ children }: CartProviderProps) {
@@ -87,25 +72,8 @@ export function CartProvider({ children }: CartProviderProps) {
     void getCart();
   }, [getCart]);
 
-  const resolveVariantIdFromProductId = useCallback(
-    async (productId: number) => {
-      const inCart = items.find((item) => item.product.id === productId);
-      if (inCart) return inCart.variant.id;
-
-      const product = await productService.getById(productId);
-      const variantId = pickVariantIdFromProduct(product);
-
-      if (typeof variantId !== "number") {
-        throw new Error("El producto no tiene variantes disponibles");
-      }
-
-      return variantId;
-    },
-    [items],
-  );
-
   const addToCart = useCallback(
-    async (productId: number) => {
+    async (variantId: number) => {
       if (!isAuthenticated) {
         setCartError("Debes iniciar sesion");
         return;
@@ -114,18 +82,17 @@ export function CartProvider({ children }: CartProviderProps) {
       setCartError(null);
 
       try {
-        const variantId = await resolveVariantIdFromProductId(productId);
         await cartService.add(variantId);
         await getCart();
       } catch (error) {
         setCartError(getErrorMessage(error));
       }
     },
-    [getCart, isAuthenticated, resolveVariantIdFromProductId],
+    [getCart, isAuthenticated],
   );
 
   const removeFromCart = useCallback(
-    async (productId: number) => {
+    async (variantId: number) => {
       if (!isAuthenticated) {
         setCartError("Debes iniciar sesion");
         return;
@@ -134,20 +101,13 @@ export function CartProvider({ children }: CartProviderProps) {
       setCartError(null);
 
       try {
-        const inCart = items.find((item) => item.product.id === productId);
-
-        if (!inCart) {
-          setCartError("El producto no esta en el carrito");
-          return;
-        }
-
-        await cartService.remove(inCart.variant.id);
+        await cartService.remove(variantId);
         await getCart();
       } catch (error) {
         setCartError(getErrorMessage(error));
       }
     },
-    [getCart, isAuthenticated, items],
+    [getCart, isAuthenticated],
   );
 
   const clearCart = useCallback(async () => {

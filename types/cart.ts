@@ -5,38 +5,15 @@ export interface CartInfo {
   updated: string | null;
 }
 
-export interface CartVariantProduct {
-  id: number;
-  name: string;
-  img?: string | null;
-}
-
-export interface CartVariant
-  extends Pick<
-    ProductVariant,
-    "id" | "color" | "size" | "price" | "stock" | "sku" | "img"
-  > {
-  product: CartVariantProduct | null;
-}
+export type CartItemProductSummary = Pick<Product, "id" | "name" | "img">;
 
 export interface CartItem {
-  product: Product;
-  variant: CartVariant;
+  variant: ProductVariant;
   quantity: number;
+  product?: CartItemProductSummary;
 }
 
-export interface BackendCartItem {
-  variant: CartVariant;
-  quantity: number;
-}
-
-export interface BackendGetCartResponse {
-  message: string;
-  cart: CartInfo;
-  products: BackendCartItem[];
-}
-
-export interface GetCartResponse {
+export interface CartResponse {
   message: string;
   cart: CartInfo;
   products: CartItem[];
@@ -46,12 +23,7 @@ export interface AddToCartResponse {
   message: string;
   data: {
     producto?: string;
-    variant: {
-      id: number;
-      color?: string | null;
-      size?: string | null;
-      sku: string;
-    };
+    variant: Pick<ProductVariant, "id" | "color" | "size" | "sku">;
     cantidad: number;
     stockRestante: number;
   };

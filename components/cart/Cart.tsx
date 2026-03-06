@@ -1,20 +1,27 @@
-﻿"use client";
+"use client";
 
 import { useEffect } from "react";
-import { CartItem } from "@/types/cart";
+import { CartItem as CartItemType } from "@/types/cart";
+import { CartItem } from "./CartItem";
 
 type CartProps = {
   isOpen: boolean;
-  items: CartItem[];
+  items: CartItemType[];
   isClearing: boolean;
   isCreatingOrder: boolean;
   errorMessage: string | null;
-  onAddItem: (productId: number) => Promise<void>;
-  onRemoveItem: (productId: number) => Promise<void>;
+  onAddItem: (variantId: number) => Promise<void>;
+  onRemoveItem: (variantId: number) => Promise<void>;
   onClearCart: () => Promise<void>;
   onCreateOrder: () => Promise<void>;
   onClose: () => void;
 };
+
+const arsFormatter = new Intl.NumberFormat("es-AR", {
+  style: "currency",
+  currency: "ARS",
+  maximumFractionDigits: 0,
+});
 
 export function Cart({
   isOpen,
@@ -50,8 +57,8 @@ export function Cart({
 
   const isEmpty = items.length === 0;
   const total = items.reduce(
-    (acc, item) => acc + item.product.price * item.quantity,
-    0
+    (acc, item) => acc + item.variant.price * item.quantity,
+    0,
   );
 
   return (
@@ -94,76 +101,20 @@ export function Cart({
             </div>
           ) : (
             <ul className="space-y-3">
-              {items.map((item) => {
-                const disableRemove =
-                  item.quantity <= 0 || isCreatingOrder || isClearing;
-                const disableAdd =
-                  item.product.stock <= 0 || isCreatingOrder || isClearing;
-
-                return (
-                  <li
-                    key={item.product.id}
-                    className="rounded-medium border border-divider p-3"
-                  >
-                    <div className="flex gap-3">
-                      {item.product.img ? (
-                        <img
-                          src={item.product.img}
-                          alt={item.product.name}
-                          className="h-16 w-16 rounded-small object-cover"
-                        />
-                      ) : (
-                        <div
-                          aria-label={`${item.product.name} image placeholder`}
-                          className="h-16 w-16 rounded-small bg-amber-200"
-                        />
-                      )}
-
-                      <div className="min-w-0 flex-1">
-                        <p className="line-clamp-2 text-sm font-medium">
-                          {item.product.name}
-                        </p>
-                        <p className="mt-1 text-xs text-foreground-500">
-                          $ {item.product.price}
-                        </p>
-                        <p className="text-xs text-foreground-500">
-                          Subtotal: {item.product.price * item.quantity}
-                        </p>
-
-                        <div className="mt-2 inline-flex items-center gap-2">
-                          <button
-                            type="button"
-                            disabled={disableRemove}
-                            className="inline-flex h-10 min-w-10 items-center justify-center rounded-small border border-divider text-lg leading-none transition-colors hover:bg-content2 disabled:cursor-not-allowed disabled:opacity-60"
-                            onClick={() => void onRemoveItem(item.product.id)}
-                          >
-                            -
-                          </button>
-
-                          <span className="min-w-6 text-center text-sm font-medium">
-                            {item.quantity}
-                          </span>
-
-                          <button
-                            type="button"
-                            disabled={disableAdd}
-                            className="inline-flex h-10 min-w-10 items-center justify-center rounded-small border border-amber-500 text-lg leading-none transition-colors hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60"
-                            onClick={() => void onAddItem(item.product.id)}
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                );
-              })}
+              {items.map((item) => (
+                <CartItem
+                  key={`${item.variant.id}-${item.variant.productId}`}
+                  item={item}
+                  onAdd={(variantId) => void onAddItem(variantId)}
+                  onRemove={(variantId) => void onRemoveItem(variantId)}
+                />
+              ))}
             </ul>
           )}
         </div>
 
         <footer className="space-y-3 border-t border-divider px-4 py-4">
-          <p className="text-sm font-semibold">Total: {total}</p>
+          <p className="text-sm font-semibold">Total: {arsFormatter.format(total)}</p>
 
           <button
             type="button"

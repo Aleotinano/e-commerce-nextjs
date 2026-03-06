@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { productService } from "@/services/products.services";
 import { ProductContextType } from "@/types/context";
 import {
@@ -61,16 +67,9 @@ export function ProductProvider({ children }: ProductProviderProps) {
         offset,
       });
 
-      setProducts(data.products);
-      setTotalProducts(data.total);
-
-      const effectiveLimit = data.limit ?? PAGE_SIZE;
-      const hasMore =
-        typeof data.total === "number"
-          ? offset + data.products.length < data.total
-          : data.products.length >= effectiveLimit;
-
-      setHasNextPage(hasMore);
+      setProducts(data);
+      setTotalProducts(data.length);
+      setHasNextPage(data.length >= PAGE_SIZE);
     } catch (error) {
       setProductError(getErrorMessage(error));
       setHasNextPage(false);
@@ -124,7 +123,7 @@ export function ProductProvider({ children }: ProductProviderProps) {
       await getProducts();
       return created;
     },
-    [getProducts],
+    [getProducts]
   );
 
   const updateProduct = useCallback(
@@ -134,7 +133,7 @@ export function ProductProvider({ children }: ProductProviderProps) {
       await getProducts();
       return updated;
     },
-    [getProducts],
+    [getProducts]
   );
 
   const removeProduct = useCallback(
@@ -143,7 +142,7 @@ export function ProductProvider({ children }: ProductProviderProps) {
       await productService.remove(id);
       await getProducts();
     },
-    [getProducts],
+    [getProducts]
   );
 
   const value = useMemo(
@@ -189,7 +188,7 @@ export function ProductProvider({ children }: ProductProviderProps) {
       createProduct,
       updateProduct,
       removeProduct,
-    ],
+    ]
   );
 
   return (
