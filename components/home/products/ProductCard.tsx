@@ -1,12 +1,19 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Button, Card, CardBody, CardFooter, Chip } from "@heroui/react";
 import { Product } from "@/types/products";
 
 interface ProductCardProps {
   product: Product;
   onAddToCart: (variantId: number) => void;
 }
+
+const arsFormatter = new Intl.NumberFormat("es-AR", {
+  style: "currency",
+  currency: "ARS",
+  maximumFractionDigits: 0,
+});
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -49,24 +56,26 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const canAdd = Boolean(selectedColor && selectedSize && selectedVariant);
 
   return (
-    <li className="rounded-medium border border-divider bg-content1 p-3">
-      {displayImage ? (
-        <img
-          src={displayImage}
-          alt={`${product.name} image`}
-          className="h-40 w-full rounded-small object-cover"
-        />
-      ) : (
-        <div
-          aria-label={`${product.name} image placeholder`}
-          className="h-40 w-full rounded-small bg-amber-200"
-        />
-      )}
+    <Card as="li" shadow="sm" className="border border-divider">
+      <CardBody className="overflow-hidden p-0">
+        {displayImage ? (
+          <img
+            src={displayImage}
+            alt={`${product.name} image`}
+            className="h-44 w-full object-cover"
+          />
+        ) : (
+          <div
+            aria-label={`${product.name} image placeholder`}
+            className="h-44 w-full bg-content2"
+          />
+        )}
+      </CardBody>
 
-      <div className="mt-3 space-y-3">
+      <CardFooter className="flex flex-col items-start gap-3 p-3">
         <div>
           <p className="line-clamp-1 text-sm font-semibold">{product.name}</p>
-          <p className="text-sm text-foreground-500">$ {displayPrice}</p>
+          <p className="text-sm text-foreground-500">{arsFormatter.format(displayPrice)}</p>
         </div>
 
         {availableColors.length > 0 ? (
@@ -77,21 +86,18 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
                 const isSelected = selectedColor === color;
 
                 return (
-                  <button
+                  <Chip
                     key={color}
-                    type="button"
-                    className={`min-h-11 rounded-full border px-3 text-sm transition ${
-                      isSelected
-                        ? "ring-2 ring-black"
-                        : "border-divider hover:bg-content2"
-                    }`}
+                    variant={isSelected ? "solid" : "bordered"}
+                    color={isSelected ? "primary" : "default"}
+                    className="min-h-11 cursor-pointer"
                     onClick={() => {
                       setSelectedColor(color);
                       setSelectedSize(null);
                     }}
                   >
                     {color}
-                  </button>
+                  </Chip>
                 );
               })}
             </div>
@@ -108,46 +114,40 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
                 const isOut = variant.stock === 0;
 
                 return (
-                  <button
+                  <Chip
                     key={variant.id}
-                    type="button"
-                    disabled={isOut}
-                    className={`relative min-h-11 min-w-11 rounded-full border px-3 text-sm transition ${
-                      isSelected
-                        ? "bg-black text-white"
-                        : "border-divider hover:bg-content2"
-                    } ${isOut ? "cursor-not-allowed opacity-40" : ""}`}
-                    onClick={() => setSelectedSize(variant.size ?? null)}
+                    variant={isSelected ? "solid" : "bordered"}
+                    color={isSelected ? "primary" : "default"}
+                    className={`min-h-11 ${
+                      isOut
+                        ? "cursor-not-allowed opacity-40 line-through"
+                        : "cursor-pointer"
+                    }`}
+                    isDisabled={isOut}
+                    onClick={() => !isOut && setSelectedSize(variant.size ?? null)}
                   >
                     {sizeLabel}
-                    {isOut ? (
-                      <span
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-0"
-                      >
-                        <span className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 rotate-45 bg-black/70" />
-                      </span>
-                    ) : null}
-                  </button>
+                  </Chip>
                 );
               })}
             </div>
           </div>
         ) : null}
 
-        <button
+        <Button
           type="button"
-          disabled={!canAdd}
-          className="min-h-11 w-full rounded-small border border-amber-500 px-4 text-sm font-medium transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
-          onClick={() => {
+          color="primary"
+          variant="bordered"
+          fullWidth
+          isDisabled={!canAdd}
+          onPress={() => {
             if (!selectedVariant) return;
             onAddToCart(selectedVariant.id);
-            console.log(onAddToCart);
           }}
         >
           Agregar al carrito
-        </button>
-      </div>
-    </li>
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
