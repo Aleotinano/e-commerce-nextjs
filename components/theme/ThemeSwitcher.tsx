@@ -1,30 +1,33 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Button, ButtonGroup } from "@heroui/react";
-
-const themeOptions = [
-  { id: "light", label: "Light" },
-  { id: "dark", label: "Dark" },
-  { id: "ocean", label: "Ocean" },
-] as const;
+import { useEffect, useState } from "react";
+import { Button } from "@heroui/react";
+import { Sun, Moon } from "lucide-react";
 
 export const ThemeSwitcher = () => {
   const { theme, setTheme } = useTheme();
-  const activeTheme = theme ?? "light";
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return <div className="h-10 w-10" />;
+
+  const isDark = theme === "dark";
 
   return (
-    <ButtonGroup aria-label="Theme options" size="sm" variant="flat">
-      {themeOptions.map((option) => (
-        <Button
-          key={option.id}
-          className="capitalize"
-          color={activeTheme === option.id ? "primary" : "default"}
-          onPress={() => setTheme(option.id)}
-        >
-          {option.label}
-        </Button>
-      ))}
-    </ButtonGroup>
+    <Button
+      variant="light"
+      isIconOnly
+      className="h-10 w-10 text-default-600 hover:text-default-900"
+      aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+      onPress={() => setTheme(isDark ? "light" : "dark")}
+    >
+      {isDark ? (
+        <Moon size={16} strokeWidth={1.8} />
+      ) : (
+        <Sun size={16} strokeWidth={1.8} />
+      )}
+    </Button>
   );
 };
