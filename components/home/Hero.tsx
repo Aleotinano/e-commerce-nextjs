@@ -11,7 +11,7 @@ const IMG_2 =
 
 export const Hero = () => {
   return (
-    <section className="relative flex max-sm:min-h-[50vh] min-h-[80vh] items-center pt-16">
+    <section className="@container relative flex min-h-[55vh] md:min-h-[65vh] items-center">
       <div className="absolute inset-0 flex overflow-hidden">
         <div className="relative flex-1">
           <img
@@ -28,15 +28,22 @@ export const Hero = () => {
           />
         </div>
       </div>
-      <div className="relative mx-auto w-full max-w-fit px-4 flex flex-col items-center gap-10 mb-50">
-        <h1 className="max-sm:text-4xl max-md:text-5xl max-lg:text-6xl text-8xl font-bold tracking-tighter">
+
+      <div className="absolute inset-0 bg-linear-to-r from-black/30 to-black/10 max-md:from-black/50 max-md:via-black/20 pointer-events-none" />
+
+      <div
+        className="relative z-10 mx-auto px-6 
+      max-md:px-8 w-full 
+      max-w-6xl @max-6xl:max-w-5xl max-md:max-w-fit max-md:mx-auto 
+      flex flex-col max-md:items-center items-start gap-6 md:gap-10"
+      >
+        <h1 className="text-6xl sm:text-7xl md:text-8xl font-bold tracking-tighter leading-none">
           {store.name}
         </h1>
-        <div>
-          <p className="text-base max-md:text-sm uppercase tracking-widest text-center font-medium">
-            {store.description}
-          </p>
-        </div>
+
+        <p className="text-sm md:text-lg uppercase tracking-widest font-medium max-md:max-w-2xs max-w-lg leading-relaxed">
+          {store.description}
+        </p>
 
         <Button
           as={Link}

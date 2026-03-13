@@ -115,7 +115,7 @@ export const Products = () => {
   const visibleError = localError || cartError;
 
   return (
-    <section id="productos" className="space-y-4 px-4">
+    <section id="productos" className="space-y-4 px-4 min-h-96">
       {visibleError ? <p className="text-danger">{visibleError}</p> : null}
 
       {productsContent}
@@ -135,4 +135,3 @@ export const Products = () => {
     </section>
   );
 };
-

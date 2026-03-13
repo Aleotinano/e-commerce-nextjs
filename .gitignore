@@ -44,5 +44,7 @@ next-env.d.ts
 .agents
 skills-lock.json
 
+#workspace
 pnpm-workspace.yaml
 pnpm-lock.yaml
+.vscode

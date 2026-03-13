@@ -1,8 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Button, Card, CardBody, Chip, Divider } from "@heroui/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  Chip,
+  Divider,
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
+  DrawerFooter,
+} from "@heroui/react";
 import { CartItem as CartItemType } from "@/types/cart";
 import { CartItem } from "./CartItem";
 
@@ -37,26 +46,6 @@ export function Cart({
   onCreateOrder,
   onClose,
 }: CartProps) {
-  const reduceMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const previousOverflow = document.body.style.overflow;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen, onClose]);
-
   const isEmpty = items.length === 0;
   const total = items.reduce(
     (acc, item) => acc + item.variant.price * item.quantity,
@@ -65,86 +54,60 @@ export function Cart({
   const itemsCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <AnimatePresence>
-      {isOpen ? (
-        <main>
-          <motion.div
-            aria-label="Cerrar carrito"
-            aria-hidden="true"
-            className="fixed inset-0 z-20 h-full bg-black/30"
-            onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reduceMotion ? 0 : 0.18 }}
-            style={{ willChange: reduceMotion ? "auto" : "opacity" }}
-          />
-
-          <motion.aside
-            id="cart-drawer"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Carrito"
-            className="fixed right-0 top-0 z-30 flex h-dvh w-full max-w-md flex-col border-l border-divider bg-background shadow-xl"
-            initial={reduceMotion ? { x: 0 } : { x: 420 }}
-            animate={{ x: 0 }}
-            exit={reduceMotion ? { x: 0 } : { x: 420 }}
-            transition={{
-              duration: reduceMotion ? 0 : 0.22,
-              ease: [0.2, 0.8, 0.2, 1],
-            }}
-            style={{ willChange: reduceMotion ? "auto" : "transform" }}
-          >
-            <header className="space-y-3 px-4 py-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold tracking-tight">
+    <Drawer
+      isOpen={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+      size="sm"
+      classNames={{
+        base: "bg-background border-l border-content4/10",
+        header: "border-b border-content4/10 pb-3",
+        footer: "border-t border-content4/10 pt-3 flex-col gap-2",
+        closeButton: "top-4 cursor-pointer text-primary-foreground",
+      }}
+    >
+      <DrawerContent>
+        {(onClose) => (
+          <>
+            {/* ── Header ── */}
+            <DrawerHeader>
+              <div className="flex gap-2 items-center">
+                <h2 className="text-2xl font-semibold tracking-tight text-primary-foreground">
                   Carrito
                 </h2>
-                <Button
-                  variant="light"
-                  size="sm"
-                  className="h-11 min-w-11 px-3"
-                  onPress={onClose}
-                >
-                  Cerrar
-                </Button>
+                <Chip size="sm">{itemsCount}</Chip>
               </div>
-              <Chip
-                variant="flat"
-                color={isEmpty ? "default" : "primary"}
-                size="sm"
-                className="h-8 px-3 text-xs font-medium"
-              >
-                {isEmpty ? "Sin productos" : `${itemsCount} producto(s)`}
-              </Chip>
-            </header>
-            <Divider />
+            </DrawerHeader>
 
-            {errorMessage ? (
-              <Card className="mx-4 mt-4 border border-danger/30 bg-danger/10 shadow-none">
-                <CardBody className="p-3">
-                  <p className="text-sm text-danger">{errorMessage}</p>
-                </CardBody>
-              </Card>
-            ) : null}
+            {/* ── Body ── */}
+            <DrawerBody className="px-4 ">
+              {/* Error */}
+              {errorMessage && (
+                <Card className="border border-danger/30 bg-danger/10 shadow-none">
+                  <CardBody className="p-3">
+                    <p className="text-sm text-danger">{errorMessage}</p>
+                  </CardBody>
+                </Card>
+              )}
 
-            <div className="flex-1 overflow-y-auto px-4 py-4">
+              {/* Items o estado vacío */}
               {isEmpty ? (
                 <Card
-                  shadow="sm"
-                  className="border border-divider bg-content2/40"
+                  shadow="none"
+                  className="border border-content4/10 bg-content1"
                 >
-                  <CardBody className="space-y-2 p-5 text-center">
-                    <p className="text-base font-medium text-foreground">
-                      Tu carrito esta vacio
+                  <CardBody className="p-5 text-center space-y-1">
+                    <p className="text-sm font-semibold text-content4">
+                      Tu carrito está vacío
                     </p>
-                    <p className="text-sm text-foreground-500">
-                      Agrega productos para continuar con tu compra.
+                    <p className="text-xs text-content4/40">
+                      Agregá productos para continuar con tu compra.
                     </p>
                   </CardBody>
                 </Card>
               ) : (
-                <ul className="space-y-3">
+                <ul className="flex flex-col">
                   {items.map((item) => (
                     <CartItem
                       key={`${item.variant.id}-${item.variant.productId}`}
@@ -155,51 +118,52 @@ export function Cart({
                   ))}
                 </ul>
               )}
-            </div>
+            </DrawerBody>
 
-            <footer className="space-y-3 px-4 py-4">
-              <Divider />
-              <Card
-                shadow="sm"
-                className="border border-divider bg-content2/40"
-              >
-                <CardBody className="space-y-1 p-3">
-                  <p className="text-xs uppercase tracking-wide text-foreground-500">
-                    Total
-                  </p>
-                  <p className="text-lg font-semibold text-foreground">
-                    {arsFormatter.format(total)}
-                  </p>
-                </CardBody>
-              </Card>
+            {/* ── Footer ── */}
+            <DrawerFooter>
+              <div className="flex items-center justify-between w-full">
+                <span className="text-xs uppercase tracking-widest text-content4/40 font-semibold">
+                  Total
+                </span>
+                <span className="text-lg font-bold text-content4">
+                  {arsFormatter.format(total)}
+                </span>
+              </div>
+
+              <Divider className="bg-content4/10" />
 
               <Button
                 color="danger"
                 variant="bordered"
                 fullWidth
-                className="h-11 text-sm font-medium"
+                size="lg"
+                radius="md"
+                className="font-medium border-danger/30 text-danger hover:border-danger"
                 isDisabled={isEmpty || isClearing || isCreatingOrder}
                 isLoading={isClearing}
                 onPress={() => void onClearCart()}
               >
-                {isClearing ? "Vaciando..." : "Vaciar carrito"}
+                {isClearing ? "Vaciando…" : "Vaciar carrito"}
               </Button>
 
               <Button
                 color="primary"
                 variant="solid"
                 fullWidth
-                className="h-11 text-sm font-semibold"
+                size="lg"
+                radius="md"
+                className="font-semibold shadow-lg shadow-primary/20"
                 isDisabled={isEmpty || isCreatingOrder || isClearing}
                 isLoading={isCreatingOrder}
                 onPress={() => void onCreateOrder()}
               >
-                {isCreatingOrder ? "Creando orden..." : "Crear orden y pagar"}
+                {isCreatingOrder ? "Creando orden…" : "Crear orden y pagar"}
               </Button>
-            </footer>
-          </motion.aside>
-        </main>
-      ) : null}
-    </AnimatePresence>
+            </DrawerFooter>
+          </>
+        )}
+      </DrawerContent>
+    </Drawer>
   );
 }

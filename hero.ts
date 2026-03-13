@@ -12,48 +12,35 @@ export default heroui({
         },
       },
       colors: {
-        background: "#DEDED1", // bg
-        foreground: "#C00707", // accent
-        content1: "#E9B63B", // CARD 1
-        content2: "#00F7FF", // CARD 2
-        content3: "#00F7FF", // sin ocupar
-        content4: "#00F7FF", // sin ocupar
-        divider: "#00F7FF", // sin ocupar
-        focus: "#DEDED1", // focus click
+        background: "#F0F0E8",
+        foreground: "#C00707",
+        content1: "#E8E8DC",
+        content2: "#F5F5F0",
+        content3: "#0F0F0F",
+        content4: "#1A1A1A",
+        divider: "#666", // libre
+        focus: "#C00707",
         primary: {
-          DEFAULT: "#C00707", // accent
-          foreground: "#FBF3D1", // inside accent
+          DEFAULT: "#C00707",
+          foreground: "#FFFFFF",
         },
       },
     },
     dark: {
       colors: {
-        background: "#0F0F0F", // bg
-        foreground: "#C00707", // accent
-        content1: "#0f172a", // CARD 1
-        content2: "#1e293b", // CARD 2
-        content3: "#334155", // sin ocupar
-        content4: "#475569", // sin ocupar
-        divider: "#334155", // sin ocupar
-        focus: "#38bdf8", // focus click
+        background: "#0F0F0F",
+        foreground: "#C00707",
+        content1: "#1A1A1A",
+        content2: "#242424",
+        content3: "#DEDED1",
+        content4: "#DEDED1",
+        divider: "#DEDED1",
+        focus: "#38bdf8",
         primary: {
-          DEFAULT: "#C00707", // accent
-          foreground: "#FBF3D1", // inside accent
+          DEFAULT: "#C00707",
+          foreground: "#FBF3D1",
         },
       },
     },
-    // ocean: {
-    //   extend: "light",
-    //   colors: {
-    //     background: "#f0f9ff",
-    //     foreground: "#082f49",
-    //     content1: "#e0f2fe",
-    //     content2: "#bae6fd",
-    //     primary: {
-    //       DEFAULT: "#0369a1",
-    //       foreground: "#e0f2fe",
-    //     },
-    //   },
-    // },
   },
 });

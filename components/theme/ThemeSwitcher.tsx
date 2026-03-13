@@ -18,16 +18,13 @@ export const ThemeSwitcher = () => {
   return (
     <Button
       variant="light"
+      size="md"
       isIconOnly
-      className="h-10 w-10 text-default-600 hover:text-default-900"
       aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+      title={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
       onPress={() => setTheme(isDark ? "light" : "dark")}
     >
-      {isDark ? (
-        <Moon size={16} strokeWidth={1.8} />
-      ) : (
-        <Sun size={16} strokeWidth={1.8} />
-      )}
+      {isDark ? <Moon size={16} /> : <Sun size={16} />}
     </Button>
   );
 };

@@ -7,10 +7,10 @@
   --font-bebas: var(--font-bebas-neue);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
 
-html {
-  overflow: scroll;
+  --shadow-active: 0 4px 24px rgba(192, 7, 7, 0.45);
+  --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.22);
 }
 
 body {
